@@ -1,0 +1,4 @@
+#
+# mainchar : 2x2t, 4bpp, SBB-layout, not compressed.
+#
+-gB4 -Mw2 -Mh2
