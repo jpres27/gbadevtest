@@ -15,15 +15,15 @@ void gameTest() {
 	int x= 96, y= 32;
 	u32 tid= 0, pb= 0;		// tile id, pal-bank
 
-	OBJ_ATTR *metr= &obj_buffer[0];
-	obj_set_attr(metr,
+	OBJ_ATTR *mainchar= &obj_buffer[0];
+	obj_set_attr(mainchar,
 		ATTR0_SQUARE,				// Square, regular sprite
-		ATTR1_SIZE_64,					// 64x64p,
+		ATTR1_SIZE_16x16,					// 16x16p,
 		ATTR2_PALBANK(pb) | tid);		// palbank 0, tile 0
 
 	// position sprite (redundant here; the _real_ position
 	// is set further down
-	obj_set_pos(metr, x, y);
+	obj_set_pos(mainchar, x, y);
 
 	while(1)
 	{
@@ -41,9 +41,9 @@ void gameTest() {
 
 		// flip
 		if(key_hit(KEY_A))	// horizontally
-			metr->attr1 ^= ATTR1_HFLIP;
+			mainchar->attr1 ^= ATTR1_HFLIP;
 		if(key_hit(KEY_B))	// vertically
-			metr->attr1 ^= ATTR1_VFLIP;
+			mainchar->attr1 ^= ATTR1_VFLIP;
 
 		// make it glow (via palette swapping)
 		pb= key_is_down(KEY_SELECT) ? 1 : 0;
@@ -53,8 +53,8 @@ void gameTest() {
 			REG_DISPCNT ^= DCNT_OBJ_1D;
 
 		// Hey look, it's one of them build macros!
-		metr->attr2= ATTR2_BUILD(tid, pb, 0);
-		obj_set_pos(metr, x, y);
+		mainchar->attr2= ATTR2_BUILD(tid, pb, 0);
+		obj_set_pos(mainchar, x, y);
 
 		oam_copy(oam_mem, obj_buffer, 1);	// only need to update one
 	}
@@ -84,18 +84,9 @@ int main() {
 	oam_init(obj_buffer, 128);
 	REG_DISPCNT= DCNT_OBJ | DCNT_OBJ_1D;
 
-	// Scroll around some
-	int x= 0, y= 0;
-	while(1) {
-		vid_vsync();
-		key_poll();
+	gameTest();
 
-		x += key_tri_horz();
-		y += key_tri_vert();
-
-		REG_BG0HOFS= x;
-		REG_BG0VOFS= y;
-	}
+	while(1);
 
 	return 0;
 }
